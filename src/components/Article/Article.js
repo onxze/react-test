@@ -13,26 +13,32 @@ class Article extends Component {
     }
 
     componentDidMount() {
-        const nid = this.props.nid;
+        const nid = this.props.match.params.id;
+
         fetch('http://backend.local/node/' + nid +'?_format=json')
         .then(result =>{
-            return result.json();
+            if (result.status === 200) {
+                return result.json();
+            }
+            else {
+                this.setState(...{message: result.statusText});
+                return [];
+            }
         }).then(data => {
             this.setState({article: data});
+        }).catch(err => {
+            console.log(err);
         })
     }
 
     render() {
         const article = this.state.article;
         if (article.length !== 0) {
-            //console.log('Article');
-            // console.log(article);
-            //onsole.log(this.state.article.body[0].processed);
-            const my_val = article.body[0].processed;
-            // console.log(my_val);
+            const my_val = article.body === undefined ? '' : article.body[0].processed;
+            const imageId = article.field_image === undefined ? '' : article.field_image[0];
             return <article>
                 <Title caption = {article.title[0].value}/>
-                <Image id = {article.field_image[0]}/>
+                <Image id = {imageId}/>
                 <Body text = {my_val}/>
             </article>
         }
