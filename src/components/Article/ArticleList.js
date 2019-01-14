@@ -13,7 +13,7 @@ class ArticleList extends Component {
     }
 
     componentDidMount() {
-        fetch('http://backend.local/content_list?_format=json')
+        fetch('http://backend.local/jsonapi/node/article?fields[node--article]=uid,title')
         .then(result =>{
             if (result.status === 200) {
                 return result.json();
@@ -23,7 +23,7 @@ class ArticleList extends Component {
                 return [];
             }
         }).then(data => {
-            this.setState({articles: data});
+            this.setState({articles: data.data});
         }).catch(err => {
             console.log(err);
         })
@@ -37,8 +37,8 @@ class ArticleList extends Component {
         return (
             <List component="nav">
                 {articles.map(a =>
-                    <ListItem button component="a" href={this.props.match.url + '/' + a.nid}>
-                        <ListItemText primary={a.title} />
+                    <ListItem button component="a" href={this.props.match.url + '/' + a.id}>
+                        <ListItemText primary={a.attributes.title} />
                     </ListItem>
                 )}
             </List>

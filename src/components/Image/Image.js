@@ -1,3 +1,7 @@
+/**
+ * @file
+ * Retrieve image from server.
+ */
 import React, { Component } from 'react';
 
 class Image extends Component {
@@ -10,25 +14,33 @@ class Image extends Component {
     }
 
     componentDidMount() {
-        const fid = this.props.id.target_id;
-        fetch('http://backend.local/entity/file/' + fid + '?_format=json')
+        const fid = this.props.field.data.id;
+        fetch('http://backend.local/jsonapi/file/file/' + fid)
         .then(result =>{
-            return result.json();
+            if (result.status === 200) {
+                return result.json();
+            }
+            else {
+                this.setState(...{message: result.statusText});
+                return [];
+            }
         }).then(data => {
             this.setState({image: data});
+        }).catch(err => {
+            console.log(err);
         })
     }
 
     render() {
         if (this.state.image.length !== 0) {
             let url = '';
-            if (this.state.image.uri !== undefined) {
-                url = "http://backend.local" + this.state.image.uri[0].url;
+            if (this.state.image.data.attributes.uri.url !== undefined) {
+                url = "http://backend.local" + this.state.image.data.attributes.uri.url;
             }
             else {
-                url = this.state.image.url;
+                return '';
             }
-            return <img src={url} alt={this.state.image.alt} />;
+            return <img src={url} alt={this.state.image.data.filename} />;
         }
         else {
             return '';

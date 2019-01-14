@@ -13,9 +13,9 @@ class Article extends Component {
     }
 
     componentDidMount() {
-        const nid = this.props.match.params.id;
+        const uuid = this.props.match.params.id;
 
-        fetch('http://backend.local/node/' + nid +'?_format=json')
+        fetch('http://backend.local/jsonapi/node/article/' + uuid + '?fields[node--article]=uid,title,body,field_image')
         .then(result =>{
             if (result.status === 200) {
                 return result.json();
@@ -34,11 +34,12 @@ class Article extends Component {
     render() {
         const article = this.state.article;
         if (article.length !== 0) {
-            const my_val = article.body === undefined ? '' : article.body[0].processed;
-            const imageId = article.field_image === undefined ? '' : article.field_image[0];
+            console.log(this.state.article.data.relationships);
+            const my_val = article.data.attributes.body === undefined ? '' : article.data.attributes.body.processed;
+            const imageField = article.data.relationships.field_image === undefined ? '' : article.data.relationships.field_image;
             return <article>
-                <Title caption = {article.title[0].value}/>
-                <Image id = {imageId}/>
+                <Title caption = {article.data.attributes.title}/>
+                <Image field = {imageField}/>
                 <Body text = {my_val}/>
             </article>
         }
